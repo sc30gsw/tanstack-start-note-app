@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { NoteFormContainer } from '~/features/notes/components/note-form-container'
+import { CreateNoteForm } from '~/features/notes/components/create-note-form'
 
 export const Route = createFileRoute('/notes/new')({
   component: RouteComponent,
@@ -8,7 +8,7 @@ export const Route = createFileRoute('/notes/new')({
 function RouteComponent() {
   return (
     <div className="grid h-dvh grid-rows-[min-content_1fr] gap-2 p-2">
-      <NoteFormContainer />
+      <CreateNoteForm />
     </div>
   )
 }

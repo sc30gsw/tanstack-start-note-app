@@ -1,18 +1,16 @@
-import {
-  headingsPlugin,
-  listsPlugin,
-  MDXEditor,
-  quotePlugin,
-  thematicBreakPlugin,
-} from '@mdxeditor/editor'
 import { useForm } from '@tanstack/react-form'
-import { Link } from '@tanstack/react-router'
-import { ChevronLeft } from 'lucide-react'
+import { Link, useRouter } from '@tanstack/react-router'
+import { ChevronLeft, Loader2, PlusIcon } from 'lucide-react'
 import { Button } from '~/components/ui/shadcn/button'
 import { Input } from '~/components/ui/shadcn/input'
+import { NoteMdxEditor } from '~/features/notes/components/note-mdx-editor'
+import { useCreateNoteMutation } from '~/features/notes/hooks/use-note-mutations'
 import { noteSchema } from '~/features/notes/types/schemas/note-schema'
 
 export function CreateNoteForm() {
+  const router = useRouter()
+  const mutation = useCreateNoteMutation()
+
   const form = useForm({
     defaultValues: {
       title: 'title',
@@ -21,16 +19,27 @@ export function CreateNoteForm() {
     validators: {
       onChange: noteSchema,
     },
+    onSubmit: async ({ value }) => {
+      const id = await mutation(value)
+      router.navigate({ to: `/notes/${id}` })
+    },
   })
 
   return (
-    <>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        form.handleSubmit()
+      }}
+    >
       <div className="flex gap-x-2">
         <Link to="..">
           <Button variant={'link'} className="cursor-pointer">
             <ChevronLeft />
           </Button>
         </Link>
+
         <form.Field name="title">
           {(field) => (
             <Input
@@ -42,18 +51,24 @@ export function CreateNoteForm() {
             />
           )}
         </form.Field>
-        <Button className="cursor-pointer">Save</Button>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+          children={([canSubmit, isSubmitting]) => (
+            <Button disabled={!canSubmit || isSubmitting} className="cursor-pointer">
+              {isSubmitting ? <Loader2 className="animate-spin" /> : <PlusIcon />}
+              Save
+            </Button>
+          )}
+        />
       </div>
       <form.Field name="content">
         {(field) => (
-          <MDXEditor
+          <NoteMdxEditor
             markdown={field.state.value}
             onChange={(markdown) => field.handleChange(markdown)}
-            plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin()]}
-            className="rounded-md border"
           />
         )}
       </form.Field>
-    </>
+    </form>
   )
 }

@@ -1,65 +1,87 @@
-import { convexQuery } from '@convex-dev/react-query'
-import {
-  headingsPlugin,
-  listsPlugin,
-  MDXEditor,
-  quotePlugin,
-  thematicBreakPlugin,
-} from '@mdxeditor/editor'
-import { useForm } from '@tanstack/react-form'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { api } from 'convex/_generated/api'
-import type { Id } from 'convex/_generated/dataModel'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Loader2, Pencil, Trash2 } from 'lucide-react'
+import { AlertDialog } from '~/components/ui/shadcn/alert-dialog'
 import { Button } from '~/components/ui/shadcn/button'
 import { Input } from '~/components/ui/shadcn/input'
-import { noteSchema } from '~/features/notes/types/schemas/note-schema'
+import { NoteMdxEditor } from '~/features/notes/components/note-mdx-editor'
+import { useEditNote } from '~/features/notes/hooks/use-edit-note'
 
-export function EditNoteForm({ id }: Partial<Record<'id', string>>) {
-  const { data: note } = useSuspenseQuery(convexQuery(api.notes.getById, { id: id as Id<'notes'> }))
-
-  const form = useForm({
-    defaultValues: {
-      title: note.title,
-      content: note.content,
-    },
-    validators: {
-      onChange: noteSchema,
-    },
-  })
+export function EditNoteForm() {
+  const { isOpen, toggle, isPending, form, handleDelete, note } = useEditNote()
 
   return (
     <>
-      <div className="flex gap-x-2">
-        <Link to="..">
-          <Button variant={'link'} className="cursor-pointer">
-            <ChevronLeft />
-          </Button>
-        </Link>
-        <form.Field name="title">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit()
+        }}
+      >
+        <div className="flex gap-x-2">
+          <Link to="..">
+            <Button variant={'link'} className="cursor-pointer">
+              <ChevronLeft />
+            </Button>
+          </Link>
+          <form.Field name="title">
+            {(field) => (
+              <Input
+                type="text"
+                placeholder="Title"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+              />
+            )}
+          </form.Field>
+          <div className="flex gap-x-2">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={toggle}
+              disabled={isPending}
+              className="cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting || isPending}
+                  className="cursor-pointer"
+                >
+                  {isSubmitting ? <Loader2 className="animate-spin" /> : <Pencil />}
+                  Update
+                </Button>
+              )}
+            />
+          </div>
+        </div>
+        <form.Field name="content">
           {(field) => (
-            <Input
-              type="text"
-              placeholder="Title"
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.target.value)}
-              onBlur={field.handleBlur}
+            <NoteMdxEditor
+              markdown={field.state.value}
+              onChange={(markdown) => field.handleChange(markdown)}
             />
           )}
         </form.Field>
-        <Button className="cursor-pointer">Save</Button>
-      </div>
-      <form.Field name="content">
-        {(field) => (
-          <MDXEditor
-            markdown={field.state.value}
-            onChange={(markdown) => field.handleChange(markdown)}
-            plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin()]}
-            className="rounded-md border"
-          />
-        )}
-      </form.Field>
+      </form>
+
+      <AlertDialog
+        open={isOpen}
+        onOpenChange={toggle}
+        title="Delete Note"
+        description={`Are you sure you want to delete "${note.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDelete}
+        onCancel={toggle}
+        destructive={true}
+      />
     </>
   )
 }
