@@ -14,23 +14,31 @@
     "check": "biome check --write ./src ./tests"
   },
   "dependencies": {
+    "@convex-dev/react-query": "^0.0.0-alpha.11",
+    "@mdxeditor/editor": "^3.42.0",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/postcss": "^4.1.12",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/react-devtools": "^0.2.2",
+    "@tanstack/react-form": "^1.19.3",
     "@tanstack/react-router": "^1.130.2",
     "@tanstack/react-router-devtools": "^1.131.5",
     "@tanstack/react-router-ssr-query": "^1.131.7",
+    "@tanstack/react-router-with-query": "^1.130.17",
     "@tanstack/react-start": "^1.131.7",
     "@tanstack/router-plugin": "^1.121.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "convex": "^1.26.2",
     "lucide-react": "^0.542.0",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-use": "^17.6.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
