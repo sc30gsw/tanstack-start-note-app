@@ -1,3 +1,4 @@
+
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 
@@ -56,5 +57,14 @@ export const updateNote = mutation({
       title: args.title,
       content: args.content,
     })
+  },
+})
+
+export const deleteNote = mutation({
+  args: {
+    id: v.id('notes'),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id)
   },
 })
