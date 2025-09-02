@@ -1,4 +1,3 @@
-import { convexQuery } from '@convex-dev/react-query'
 import {
   headingsPlugin,
   listsPlugin,
@@ -7,24 +6,17 @@ import {
   thematicBreakPlugin,
 } from '@mdxeditor/editor'
 import { useForm } from '@tanstack/react-form'
-import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { api } from 'convex/_generated/api'
-import type { Id } from 'convex/_generated/dataModel'
 import { ChevronLeft } from 'lucide-react'
 import { Button } from '~/components/ui/shadcn/button'
 import { Input } from '~/components/ui/shadcn/input'
 import { noteSchema } from '~/features/notes/types/schemas/note-schema'
-import { Route } from '~/routes/notes/$id'
 
-export function NoteForm() {
-  const { id } = Route.useParams()
-  const { data: note } = useSuspenseQuery(convexQuery(api.notes.getById, { id: id as Id<'notes'> }))
-
+export function CreateNoteForm() {
   const form = useForm({
     defaultValues: {
-      title: note.title,
-      content: note.content,
+      title: 'title',
+      content: '# Hello **world**',
     },
     validators: {
       onChange: noteSchema,

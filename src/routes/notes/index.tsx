@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { PlusIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import Loader from '~/components/ui/loader'
@@ -14,10 +14,12 @@ function NotesPage() {
     <div className="grid h-dvh grid-rows-[min-content_1fr]">
       <div className="flex items-center justify-between border-b-2 p-2">
         <h1>Notes</h1>
-        <Button size={'sm'}>
-          <PlusIcon />
-          Add Note
-        </Button>
+        <Link to="/notes/new">
+          <Button size={'sm'}>
+            <PlusIcon />
+            Add Note
+          </Button>
+        </Link>
       </div>
       <div className="p-2">
         <Suspense fallback={<Loader />}>
